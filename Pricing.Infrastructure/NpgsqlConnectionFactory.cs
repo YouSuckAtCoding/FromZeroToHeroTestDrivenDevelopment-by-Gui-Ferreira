@@ -1,7 +1,7 @@
 ﻿using Npgsql;
 using System.Data;
 
-namespace Pricing.Infrastructure.Tests
+namespace Pricing.Infrastructure
 {
     public class NpgsqlConnectionFactory : IDbConnectionFactory
     {
@@ -16,7 +16,7 @@ namespace Pricing.Infrastructure.Tests
             var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
             return connection;
-            
+
         }
 
     }

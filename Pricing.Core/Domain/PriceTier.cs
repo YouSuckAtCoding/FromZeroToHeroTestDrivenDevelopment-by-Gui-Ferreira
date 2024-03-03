@@ -17,6 +17,14 @@ namespace Pricing.Core.Domain
             Price = price;
         }
 
-       
+        public decimal CalculateFullPrice()
+        {
+            return Price * HourLimit;
+        }
+
+        public override string ToString()
+        {
+            return $"<= {HourLimit} hours | {Price:C}";
+        }
     }
 }

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Testcontainers.PostgreSql;
-using Pricing.Infrastructure;
 
 namespace Pricing.Infrastructure.Tests
 {

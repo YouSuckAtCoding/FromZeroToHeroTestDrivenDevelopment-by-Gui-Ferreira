@@ -1,16 +1,14 @@
 ﻿using Pricing.Core.Extensions;
 
-namespace Pricing.Core
+namespace Pricing.Core.ApplyPricing
 {
     public class PricingManager : IPricingManager
     {
+        private readonly IPricingStore _pricingStore;
         public PricingManager(IPricingStore pricingStore)
         {
             _pricingStore = pricingStore;
         }
-
-        public IPricingStore _pricingStore { get; }
-
         public async Task<bool> HandleAsync(ApplyPricingRequest request, CancellationToken token)
         {
             ArgumentNullException.ThrowIfNull(request);

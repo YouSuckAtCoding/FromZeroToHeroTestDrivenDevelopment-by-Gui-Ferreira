@@ -1,21 +1,26 @@
+using Pricing.Api.TicketPrice;
 using Pricing.Core;
+using Pricing.Core.ApplyPricing;
 using Pricing.Core.Domain.Exceptions;
-using Pricing.Core.Extensions;
+using Pricing.Core.TicketPrice;
+using Pricing.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
+builder.Services.AddSingleton<IDbConnectionFactory>(_ =>
+    new NpgsqlConnectionFactory(builder.Configuration.GetValue<string>("Database:ConnectionString")!));
+builder.Services.AddSingleton<DatabaseInitializer>();
+builder.Services.AddScoped<IPricingStore, PostgresPricingStore>();
 builder.Services.AddScoped<IPricingManager, PricingManager>();
+builder.Services.AddScoped<ITicketPriceService, TicketPriceService>();
+builder.Services.AddScoped<IPriceCalculator, PriceCalculator>();
+builder.Services.AddScoped<IReadPricingStore, PostgresReadPricingStore>();
 
 var app = builder.Build();
 
 app.MapGet("/", () => "Hello Modafoca");
 
-app.MapPut("PricingTable", async (IPricingManager pricingManager, ApplyPricingRequest request, CancellationToken token) =>
+app.MapPut("/PricingTable", async (IPricingManager pricingManager, ApplyPricingRequest request, CancellationToken token) =>
 { 
 
     try
@@ -28,9 +33,19 @@ app.MapPut("PricingTable", async (IPricingManager pricingManager, ApplyPricingRe
         return Results.Problem();
     }
 
-}
-);
+});
+
+app.MapGet("/TicketPrice", TicketPriceEndpoint.HandleAsync);
+
+
+await InitializeDatabase(app);
 
 app.Run();
+return;
+Task InitializeDatabase(WebApplication app) =>
+    app.Services.GetService<DatabaseInitializer>()?.InitializeAsync() ?? Task.CompletedTask;
+
+
+
 
 

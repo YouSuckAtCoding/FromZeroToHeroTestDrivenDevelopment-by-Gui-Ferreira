@@ -71,11 +71,22 @@ namespace Pricing.Core.Tests.Domain
         }
 
         [Fact]
-        public void Should_Calculate_Price_Per_Hour()
+        public void Should_Print_Table_With_Tiers()
         {
+            var pricingTable = new PricingTable(new[]
+            {
+                CreatePriceTier(1, 0.5m),
+                CreatePriceTier(24,3)
+            });
 
+            string expected =
+                """
+                <= 1 hours | R$ 0,50
+                <= 24 hours | R$ 3,00
+                """;
+
+            pricingTable.ToString().Should().Be(expected);
         }
-
 
         private static PriceTier CreatePriceTier(int hourLimit = 24, decimal price = 1) => new PriceTier(hourLimit, price);
     }

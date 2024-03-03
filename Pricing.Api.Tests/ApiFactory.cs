@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Pricing.Core;
-using Pricing.Infrastructure.Tests;
+using Pricing.Core.ApplyPricing;
+using Pricing.Core.TicketPrice;
+using Pricing.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +34,8 @@ namespace Pricing.Api.Tests
                 services.RemoveAll(typeof(IDbConnectionFactory));
                 services.RemoveAll(typeof(DatabaseInitializer));
                 services.RemoveAll(typeof(IPricingStore));
+                services.RemoveAll(typeof(IReadPricingStore));
+                services.AddScoped<IReadPricingStore>(s => null!);
 
                 _configure(services);
 

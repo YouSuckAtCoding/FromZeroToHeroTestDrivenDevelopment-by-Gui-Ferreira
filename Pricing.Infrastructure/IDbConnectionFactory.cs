@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace Pricing.Infrastructure.Tests
+namespace Pricing.Infrastructure
 {
     public interface IDbConnectionFactory
     {

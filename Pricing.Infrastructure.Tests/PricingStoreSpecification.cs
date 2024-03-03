@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using FluentAssertions;
-using Pricing.Core;
+using FluentAssertions.Execution;
+using Pricing.Core.ApplyPricing;
 using Pricing.Core.Domain;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,7 @@ namespace Pricing.Infrastructure.Tests
         public void Should_Throw_ArgumentNullException_If_Missing_Connection_String()
         {
             var create = () => new PostgresPricingStore(null!);
+
             create.Should().ThrowExactly<ArgumentNullException>();
         }
 
@@ -31,7 +33,9 @@ namespace Pricing.Infrastructure.Tests
         {
             IPricingStore store = new PostgresPricingStore(_dbConnectionFactory);
             PricingTable pricingTable = CreatePricingTable();
+
             var res = await store.SaveAsync(pricingTable, default);
+
             res.Should().BeTrue();
         }
 
@@ -41,19 +45,12 @@ namespace Pricing.Infrastructure.Tests
         {
             IPricingStore store = new PostgresPricingStore(_dbConnectionFactory);
             PricingTable pricingTable = CreatePricingTable();
-            using IDbConnection connection = await CleanupPricingStore();
-            var res = await store.SaveAsync(pricingTable, default);
-            res.Should().BeTrue();
-        }
 
-        private async Task<IDbConnection> CleanupPricingStore()
-        {
-            var connection = await _dbConnectionFactory.CreateConnectionAsync();
-            await connection.ExecuteAsync
-                (
-                    "truncate table pricing;"
-                );
-            return connection;
+            using IDbConnection connection = await CleanupPricingStore();
+
+            var res = await store.SaveAsync(pricingTable, default);
+
+            res.Should().BeTrue();
         }
 
         [Fact]
@@ -69,10 +66,15 @@ namespace Pricing.Infrastructure.Tests
             await store.SaveAsync(newPricingTable, default);
             var data = await GetPricingsFromStore();
 
-            data.Should().HaveCount(1)
+            using (new AssertionScope())
+            {
+                data.Should().HaveCount(1)
                 .And
                 .Subject
                 .First().document.Equals(JsonSerializer.Serialize(newPricingTable));
+            }
+
+            
         }
 
         private async Task<IEnumerable<dynamic>> GetPricingsFromStore()
@@ -89,5 +91,18 @@ namespace Pricing.Infrastructure.Tests
                  new PriceTier(24, 1)
             });
         }
+
+
+        private async Task<IDbConnection> CleanupPricingStore()
+        {
+            var connection = await _dbConnectionFactory.CreateConnectionAsync();
+
+            await connection.ExecuteAsync
+                (
+                    "truncate table pricing;"
+                );
+            return connection;
+        }
+
     }
 }

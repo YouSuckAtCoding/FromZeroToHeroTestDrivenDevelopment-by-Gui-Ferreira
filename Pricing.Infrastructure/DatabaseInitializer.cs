@@ -2,7 +2,7 @@
 
 using Dapper;
 
-namespace Pricing.Infrastructure.Tests
+namespace Pricing.Infrastructure
 {
     public class DatabaseInitializer
     {
@@ -15,7 +15,7 @@ namespace Pricing.Infrastructure.Tests
 
         public async Task InitializeAsync()
         {
-             using var connection = await _connectionFactory.CreateConnectionAsync();
+            using var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
                 @"CREATE TABLE IF NOT EXISTS pricing (
                 key TEXT PRIMARY KEY,

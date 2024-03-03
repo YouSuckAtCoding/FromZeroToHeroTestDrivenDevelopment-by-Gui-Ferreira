@@ -13,6 +13,7 @@ namespace Pricing.Core.Tests.Domain
         public void Should_Throw_InvalidPricingTierException_When_Hour_Is_Invalid(int hour)
         {
             var create = () => new PriceTier(hour, 1);
+
             create.Should().ThrowExactly<InvalidPricingTierException>()
                 .WithMessage("Invalid hour limit");
         }
@@ -20,7 +21,19 @@ namespace Pricing.Core.Tests.Domain
         public void Should_Throw_InvalidPricingTierException_When_Price_Is_Negative()
         {
             var create = () => new PriceTier(24, -5);
+
             create.Should().ThrowExactly<InvalidPricingTierException>("Invalid price");
+        }
+
+        [Fact]
+        public void Should_Calculate_The_Full_Price_For_Tier()
+        {
+            //arr
+            var tier = new PriceTier(5, 2);
+            //act
+            decimal fullPrice = tier.CalculateFullPrice();
+            //assert
+            fullPrice.Should().Be(10);
         }
     }
 }

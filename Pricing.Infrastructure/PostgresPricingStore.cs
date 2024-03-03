@@ -1,10 +1,10 @@
-﻿using Pricing.Core;
-using Pricing.Core.Domain;
+﻿using Pricing.Core.Domain;
 using Dapper;
-using System.Text;
-using System.Text.Json;
 
-namespace Pricing.Infrastructure.Tests
+using System.Text.Json;
+using Pricing.Core.ApplyPricing;
+
+namespace Pricing.Infrastructure
 {
     public class PostgresPricingStore : IPricingStore
     {
@@ -14,7 +14,7 @@ namespace Pricing.Infrastructure.Tests
         {
             _dbConnectionFactory = dbConnectionFactory;
             ArgumentNullException.ThrowIfNull(dbConnectionFactory);
-            
+
         }
 
         public async Task<bool> SaveAsync(PricingTable pricingTable, CancellationToken cancellationToken)

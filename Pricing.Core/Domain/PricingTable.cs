@@ -47,5 +47,10 @@ namespace Pricing.Core.Domain
 
             return total;
         }
+
+        public override string ToString()
+        {
+            return string.Join(Environment.NewLine, Tiers.Select(tier => tier.ToString()));
+        }
     }
 }

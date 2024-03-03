@@ -1,4 +1,5 @@
-﻿using Pricing.Core.Domain;
+﻿using Pricing.Core.ApplyPricing;
+using Pricing.Core.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
